@@ -1,36 +1,37 @@
 @echo off
 
-:INITIALIZE
+:CONFIG_SETTINGS
 
-  set bkp_dir=%UserProfile%\bkp
-  set time2=%time: =0%
-  set dest_dir=%bkp_dir%\%date:/=-%-%time2::=%
+  set bkp_path=%UserProfile%\bkp
+  set xcopy_opts=/D /S /R /Y /I /K /H
 
 :CREATE_BACKUP_FOLDER
 
-  if not exist %bkp_dir% (
-    mkdir %bkp_dir%
+  if not exist %bkp_path% (
+    mkdir %bkp_path%
     if "%ErrorLevel%" == "0" (
       echo Created backup root folder
     ) else (
       echo Failed to create backup folder
     )
-    echo %bkp_dir%
+    echo %bkp_path%
   )
 
 :CREATE_CURRENT_TIMESTAMP_FOLDER
 
-  echo BackupFolder: %dest_dir%
+  set time2=%time: =0%
+  set dest_path=%bkp_path%\%date:/=-%-%time2::=%
+  mkdir %dest_path%
+  echo BackupFolder: %dest_path%
   echo.
-  mkdir %dest_dir%
 
 :BACKUP_ARGUMENTS
 
   for %%a in (%*) do (
-    xcopy %%a %dest_dir% /D /S /R /Y /I /K /H
+    xcopy %%a %dest_path% %xcopy_opts%
     
     if not "%ErrorLevel%" == "0" (
-      echo Failed...
+      echo Failed to backup ...
       pause
     )
   )
