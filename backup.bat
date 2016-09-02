@@ -1,9 +1,10 @@
 @echo off
 
-:CONFIG_SETTINGS
+:CONFIG
 
   set bkp_path=%UserProfile%\bkp
-  set xcopy_opts=/D /S /R /Y /I /K /H
+  set copy_cmd=xcopy
+  set copy_opts=/C /R /Y /I /K /H /S
 
 :CREATE_BACKUP_FOLDER
 
@@ -28,7 +29,11 @@
 :BACKUP_ARGUMENTS
 
   for %%a in (%*) do (
-    xcopy %%a %dest_path% %xcopy_opts%
+    if exist "%%a\" (
+      %copy_cmd% %%a "%dest_path%\%%~na" %copy_opts%
+    ) else (
+      %copy_cmd% %%a "%dest_path%" %copy_opts%
+    )
     
     if not "%ErrorLevel%" == "0" (
       echo Failed to backup ...
@@ -38,5 +43,5 @@
 
 :FINISH
 
-  timeout 5
+  timeout 3
 
